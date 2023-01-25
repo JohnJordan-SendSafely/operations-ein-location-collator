@@ -98,7 +98,7 @@ form > div {
 hr {
     margin-bottom: 2.5rem;
 }
-input {
+input, select {
     box-sizing: border-box;
     display: block;
     width: 100%;
@@ -181,7 +181,7 @@ strong {
     visibility: hidden;
 }
 @media screen and (min-width: 20rem) {
-    input{
+    input, select{
         max-width: 20rem;
     }
     input[type="submit"] {
