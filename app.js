@@ -1,5 +1,5 @@
 const SCRIPT_PROP = PropertiesService.getScriptProperties();
-const setup = function() {
+const _setup = function() {
     const doc = SpreadsheetApp.getActiveSpreadsheet();
     SCRIPT_PROP.setProperty("key", doc.getId());
     const sheet = doc.getSheets()[0];
@@ -11,6 +11,14 @@ const setup = function() {
     console.log("setup complete");
     //if (SCRIPT_PROP.getProperty("sendsafely_validation_key") == undefined) { SCRIPT_PROP.setProperty("sendsafely_validation_key", "") };
 };
+const _getEIN = function(e) {
+    const params = e.parameter;
+    let ein = "";
+    for(let i = 1, digit; digit = params["ein_digit_" + i]; i++ ) {
+        ein += digit;
+    }
+    return parseInt(ein);
+}
 const doPost = function(e){
     return handleResponse(e);
 };
@@ -19,8 +27,7 @@ const handleResponse = function(e){
     try {
         const requestParams = e.parameter; //object
         const companyName = requestParams["company-name"];
-        const ein = requestParams["employer-identification-number"];
-        // const timestamp;
+        const ein = _getEIN(e);
         console.log('Submission from company: ', companyName, ein);
 
         try {
@@ -29,7 +36,7 @@ const handleResponse = function(e){
 
             const prevSubmissionValue = sheet.getRange(1, 1, 2).getValues();
             const prevSubmissionId = prevSubmissionValue[prevSubmissionValue.length - 1] //actual ID
-            const submissionID = parseInt(prevSubmissionId) + 1;
+            const submissionID = parseInt(prevSubmissionId) + 1 || 1; // if first entry
             console.log('new submission ID: ', submissionID);
 
             //New submissions will be stored in the sheet, starting with the most recent entry first
@@ -54,7 +61,16 @@ const test_handleResponse = function () {
     const _e = {
         parameter: {
             "company-name": "MegaCorp",
-            "employer-identification-number": 12344556
+            "employer-identification-number": 92344556,
+            "ein_digit_1": 1,
+            "ein_digit_2": 2,
+            "ein_digit_3": 3,
+            "ein_digit_4": 4,
+            "ein_digit_5": 5,
+            "ein_digit_6": 6,
+            "ein_digit_7": 7,
+            "ein_digit_8": 8,
+            "ein_digit_9": 9,
         }
     };
     handleResponse(_e);

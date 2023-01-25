@@ -73,11 +73,12 @@ button {
     box-shadow: inset 0 0 0.125rem rgb(0 11 40 / 90%);;
 }
 fieldset {
+    border: solid 0.125rem #CCC;
     position: relative; /* for sr-only class */
 }
 form {
     box-sizing: border-box;
-    border: solid 0.125rem gray;
+    border: solid 0.125rem #CCC;
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -115,6 +116,7 @@ input[type="number"] {
     display: inline;
     max-width: 2.25rem;
     padding: 0.25rem 0.125rem;
+    text-align: right;
 }
 input[type="submit"] {
     background: white;
@@ -143,7 +145,7 @@ legend {
     position: relative;
     left: -1rem;
 }
-label > span {
+label > span, legend > span {
     color: #ff0000;
 }
 output {
