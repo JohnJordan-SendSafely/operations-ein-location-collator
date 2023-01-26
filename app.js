@@ -5,9 +5,11 @@ const _setup = function() {
     const sheet = doc.getSheets()[0];
     sheet.setName("EIN Form Submissions");
     sheet.getRange(1,1).setValue("Submission ID#");
-    sheet.getRange(1,2).setValue("Company Name");
-    sheet.getRange(1,3).setValue("Employer Identification Number");
-    sheet.getRange(1,4).setValue("Timestamp");
+    sheet.getRange(1,2).setValue("Legal Name");
+    sheet.getRange(1,3).setValue("D/B/A Name");
+    sheet.getRange(1,4).setValue("Employer Identification Number");
+    sheet.getRange(1,5).setValue("Foreign Country of Origin");
+    sheet.getRange(1,6).setValue("Timestamp");
     console.log("setup complete");
     //if (SCRIPT_PROP.getProperty("sendsafely_validation_key") == undefined) { SCRIPT_PROP.setProperty("sendsafely_validation_key", "") };
 };
@@ -61,7 +63,8 @@ const test_handleResponse = function () {
     const _e = {
         parameter: {
             "company-name": "MegaCorp",
-            "employer-identification-number": 92344556,
+            "country": "United States",
+            "employer-identification-number": 12121212121,
             "ein_digit_1": 1,
             "ein_digit_2": 2,
             "ein_digit_3": 3,
