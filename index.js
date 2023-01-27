@@ -102,6 +102,7 @@ document.addEventListener('click', e => {
             const tagName = elem.tagName;
             if(tagName === "SELECT" || tagName === "INPUT") {
                 elem.value = "";
+                elem.setCustomValidity('');
             }
         });
     }
