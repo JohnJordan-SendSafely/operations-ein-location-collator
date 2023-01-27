@@ -13,6 +13,12 @@
     src: url(https://fonts.gstatic.com/s/poppins/v20/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2) format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+@keyframes rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
 a {
     color: #e76f43;
     text-decoration: none;
@@ -168,6 +174,38 @@ legend {
     background: white;
     font-size: 1.25rem;
     font-weight: bold;
+}
+
+.loading {
+    min-height: 10rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading > p > span {
+    display: inline-block;
+    font-size: 3rem;
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.loading > p > span:before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2rem;
+    height: 2rem;
+    margin-top: -0.625rem;
+    margin-left: -0.625rem;
+    border-radius: 50%;
+    border: 0.25rem solid #CCC;
+    border-top-color: #28a745;
+    animation: rotate 3s linear infinite;
 }
 
 .nested {

@@ -33,6 +33,15 @@ const _domesticCountrySelected = function (wipeValue = false) {
     })
 };
 
+const _setUIFormSubmit = function (form) {
+    form.innerHTML = `
+             <div class="loading">
+                <p>
+                    <span></span><br/>Submitting form...
+                </p>
+            </div>`;
+};
+
 /**
  *
  * @param {boolean} wipeValue removes data input in 'domestic-country' radio selection
@@ -79,7 +88,7 @@ document.addEventListener('submit', function (e){
         _domesticCountrySelected(true);
     }
     e.target.submit();
-    // TODO: update UI as form is submitting, prior to URL change
+    _setUIFormSubmit(e.target);
 });
 
 document.addEventListener('click', e => {
