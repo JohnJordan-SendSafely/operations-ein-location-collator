@@ -13,8 +13,26 @@
     <main>
         <section>
             <header>
-                <h1>EIN</h1>
+                <h1>SendSafely Customer Information Verification</h1>
+                <p>SendSafely is required to maintain accurate records about its customers for compliance purposes. </p>
             </header>
+            <h2>Instructions</h2>
+            <p>
+                Fill in your <strong>legal company name</strong>, and the D/B/A name (if applicable) of the entity paying for SendSafely services.
+            </p>
+            <p>
+                If your company is incorporated in the United States:
+            </p>
+            <ul>
+                <li>check the box next to “Domestic company” and provide your IRS-issued <strong>Employer Identification Number</strong> as it appears on your W-9.</li>
+            </ul>
+            <p>
+                If your company is incorporated outside of the United States:
+            </p>
+            <ul>
+                <li>check the box next to “Foreign company” and provide the <strong>name of the country</strong> in which the company is registered</li>
+            </ul>
+            <hr>
             <form 
                     action="https://script.google.com/macros/s/AKfycbzJ_sHCM7vXsHns5gydXWaDicgtw4gTefkKtOEuEcXcnrh65llJ_YRSdIg7RmdqJm6K/exec"
                     method="POST"
@@ -40,7 +58,6 @@
                             </label>
                             <fieldset class="nested">
                                 <legend>Employer Identification Number<span class="req">*</span></legend>
-                                <!--                       <input id="ein" type="number" pattern=(?<!\d)\d$" title=Whole number between 0 and 9" name="employer-identification-number" required>-->
                                 <label class="sr-only" for="ein_1">EIN 1st Digit</label>
                                 <input type="number" title="Whole number between 0 and 9" id="ein_1" min="0" max="9" name="ein_digit_1" required>
                                 <label class="sr-only" for="ein_2">EIN 2nd Digit</label>
@@ -328,8 +345,9 @@
                     </fieldset>
                 </div>
                 <input type="submit">
-
             </form>
+            <hr>
+            If you have any questions about filling out this form, please contact <a href='mailto:billing@sendsafely.com'>billing@sendsafely.com</a>.
         </section>
     </main>
 </body>

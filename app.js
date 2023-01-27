@@ -66,7 +66,8 @@ const handleResponse = function(e){
             sheet.getRange(2,5).setValue(origin);
             sheet.getRange(2,6).setValue(new Date()); // Timestamp
 
-            return HtmlService.createHtmlOutput("<h1>Submission received</h1><p>Thank you</p>");
+            return HtmlService.createHtmlOutput("<h1>Submission received</h1><p>Thank you.</p>" +
+                "<p>If you have any questions about filling out this form, please contact <a href='mailto:billing@sendsafely.com'>billing@sendsafely.com</a>.</p>");
 
         } finally {
             lock.releaseLock();
