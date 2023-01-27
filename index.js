@@ -26,7 +26,7 @@ const _domesticCountrySelected = function (wipeValue = false) {
     if(wipeValue) {
         countrySelect.value = "";
     }
-    countrySelect.parentElement.classList.add('hidden');
+    foreignCompanyFS.querySelector('.nested').classList.add('hidden');
     domesticCompanyFS.querySelector('.nested').classList.remove('hidden');
     einInputs.forEach(elem => {
         elem.setAttribute('required', 'required');
@@ -34,12 +34,14 @@ const _domesticCountrySelected = function (wipeValue = false) {
 };
 
 const _setUIFormSubmit = function (form) {
-    form.innerHTML = `
-             <div class="loading">
+    const spinner = document.createElement('div');
+    spinner.classList.add('loading');
+    spinner.innerHTML = `
                 <p>
                     <span></span><br/>Submitting form...
-                </p>
-            </div>`;
+                </p>`;
+    form.parentNode.insertBefore(spinner, form);
+    form.classList.add('hidden')
 };
 
 /**
@@ -49,7 +51,7 @@ const _setUIFormSubmit = function (form) {
  */
 const _foreignCountrySelected = function (wipeValue = false) {
     countrySelect.setAttribute('required', 'required');
-    countrySelect.parentElement.classList.remove('hidden');
+    foreignCompanyFS.querySelector('.nested').classList.remove('hidden');
     domesticCompanyFS.querySelector('.nested').classList.add('hidden');
     einInputs.forEach(elem => {
         elem.removeAttribute('required');
@@ -89,6 +91,7 @@ document.addEventListener('submit', function (e){
     }
     e.target.submit();
     _setUIFormSubmit(e.target);
+    e.target.remove();
 });
 
 document.addEventListener('click', e => {
@@ -105,6 +108,9 @@ document.addEventListener('click', e => {
 });
 
 window.addEventListener('load', () => {
+    // in event of user back naving post-submission
+    document.querySelector('.spinner').remove();
+    form.classList.remove('hidden');
     if(foreignCompanyFS.querySelector('input').checked) {
         _foreignCountrySelected();
     } else {
