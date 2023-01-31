@@ -14,7 +14,6 @@ const _checkForMultiDigits = function (elem) {
     } else {
         elem.setCustomValidity('');
     }
-    console.log('elkem ', elem.checkValidity());
 }
 /**
  *
@@ -35,7 +34,7 @@ const _domesticCountrySelected = function (wipeValue = false) {
 
 const _setUIFormSubmit = function (form) {
     const spinner = document.createElement('div');
-    spinner.classList.add('loading');
+    spinner.classList.add('submit-spinner');
     spinner.innerHTML = `
                 <p>
                     <span></span><br/>Submitting form...
@@ -44,8 +43,17 @@ const _setUIFormSubmit = function (form) {
     form.classList.add('hidden')
 };
 
+const _setUISuccessMsg = function () {
+    const s = document.querySelector('.submit-spinner');
+    if(s) {
+        s.innerHTML = `<div class="success"><span>✅</span>
+            <h2>Success!</h2>
+            <p>Your submission has been received.</p>
+        </div>`;
+    }
+};
+
 /**
- *
  * @param {boolean} wipeValue removes data input in 'domestic-country' radio selection
  * @private
  */
@@ -90,15 +98,26 @@ document.addEventListener('submit', function (e){
         _domesticCountrySelected(true);
     }
     const form = e.target;
-    form.submit();
-    _setUIFormSubmit(e.target);
-    e.target.remove();
-    // fetch(form.action, {method:'post', body: new FormData(form)}).then((d) => {
-    //     //form.submit();
-    //     console.log('form submitted', d, d.json());
-    //     _setUIFormSubmit(e.target);
-    //     e.target.remove();
-    // });
+
+    _setUIFormSubmit(form);
+    form.remove();
+    fetch('https://script.google.com/macros/s/AKfycbwC6vnoawSU_jMhzb0YCd-xXeYMQaEPAeBKo5oGQYPJxGX3nriENjTPNDudo5N9bYRq/exec',
+        {
+            method:'post',
+            body: new FormData(form)
+        }).then((r) => {
+           setTimeout(()=>{
+               if(r.status === 200 || r.ok === true) {
+                   _setUISuccessMsg(form);
+               } else {
+                   //todo: server error message
+               }
+           }, 2000)
+        }).catch( e=> {
+            //todo: network error
+        }).finally( () => {
+
+        });
 });
 
 document.addEventListener('click', e => {

@@ -232,7 +232,7 @@ legend {
     font-weight: bold;
 }
 
-.loading {
+.submit-spinner {
     min-height: 10rem;
     text-align: center;
     display: flex;
@@ -241,14 +241,14 @@ legend {
     align-items: center;
 }
 
-.loading > p > span {
+.submit-spinner > p > span {
     display: inline-block;
     font-size: 3rem;
     position: relative;
     margin-bottom: 1.5rem;
 }
 
-.loading > p > span:before {
+.submit-spinner > p > span:before {
     content: '';
     box-sizing: border-box;
     position: absolute;
@@ -262,6 +262,17 @@ legend {
     border: 0.25rem solid #CCC;
     border-top-color: #28a745;
     animation: rotate 3s linear infinite;
+}
+
+.success {
+    text-align: center;
+}
+.success > h2 {
+    margin-top: 0
+}
+
+.success > span {
+    font-size: 2rem;
 }
 
 .nested {
