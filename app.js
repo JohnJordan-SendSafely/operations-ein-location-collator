@@ -18,6 +18,27 @@ const _e = {
         "foreign_country": ""
     }
 };
+const _getCountryOfOrigin = function (e) {
+    const params = e.parameter;
+    const o = params['country-of-origin'];
+    const foreignCountry = params['foreign-country'];
+    if("domestic" === o) return "United States";
+    if("foreign" === o) return  foreignCountry;
+    return "error with form data";
+};
+const _getEIN = function(e) {
+    const params = e.parameter;
+    let ein = "";
+    for(let i = 1, digit; digit = params["ein_digit_" + i]; i++ ) {
+        ein += digit;
+    }
+    const einNum = parseInt(ein);
+    // catch 'NaN' or empty string (as 0)
+    if(einNum !== einNum || 0 === einNum) {
+        return "n/a";
+    }
+    return einNum;
+};
 const _setup = function() {
     const doc = SpreadsheetApp.getActive().getSheetByName("EIN Form Submissions");
     SCRIPT_PROP.setProperty("key", doc.getId());
@@ -33,32 +54,15 @@ const _setup = function() {
     console.log("setup complete");
     //if (SCRIPT_PROP.getProperty("sendsafely_validation_key") == undefined) { SCRIPT_PROP.setProperty("sendsafely_validation_key", "") };
 };
-const _getEIN = function(e) {
-    const params = e.parameter;
-    let ein = "";
-    for(let i = 1, digit; digit = params["ein_digit_" + i]; i++ ) {
-        ein += digit;
-    }
-    const einNum = parseInt(ein);
-    // catch 'NaN' or empty string (as 0)
-    if(einNum !== einNum || 0 === einNum) {
-        return "n/a";
-    }
-    return einNum;
-}
-
-const _getCountryOfOrigin = function (e) {
-    const params = e.parameter;
-    const o = params['country-of-origin'];
-    const foreignCountry = params['foreign-country'];
-    if("domestic" === o) return "United States";
-    if("foreign" === o) return  foreignCountry;
-    return "error with form data";
-}
+const _testHandleResponse = function () {
+    handleResponse(_e);
+};
 const doPost = function(e){
     const ev = e || _e; // real or fake data
     handleResponse(ev);
     updateTrackingSheet(ev);
+    return HtmlService.createHtmlOutput("<h1>Submission received</h1><p>Thank you.</p>" +
+        "<p>If you have any questions about filling out this form, please contact <a href='mailto:billing@sendsafely.com'>billing@sendsafely.com</a>.</p>");
 };
 const handleResponse = function(e){
     const lock = LockService.getPublicLock();
@@ -88,18 +92,12 @@ const handleResponse = function(e){
             sheet.getRange(2,5).setValue(origin);
             sheet.getRange(2,6).setValue(new Date()); // Timestamp
 
-            return HtmlService.createHtmlOutput("<h1>Submission received</h1><p>Thank you.</p>" +
-                "<p>If you have any questions about filling out this form, please contact <a href='mailto:billing@sendsafely.com'>billing@sendsafely.com</a>.</p>");
-
         } finally {
             lock.releaseLock();
         }
 
     } catch (e) {
         // error email here
+        console.error(e);
     }
 };
-
-const test_handleResponse = function () {
-    handleResponse(_e);
-}

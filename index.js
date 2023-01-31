@@ -89,9 +89,16 @@ document.addEventListener('submit', function (e){
     } else {
         _domesticCountrySelected(true);
     }
-    e.target.submit();
+    const form = e.target;
+    form.submit();
     _setUIFormSubmit(e.target);
     e.target.remove();
+    // fetch(form.action, {method:'post', body: new FormData(form)}).then((d) => {
+    //     //form.submit();
+    //     console.log('form submitted', d, d.json());
+    //     _setUIFormSubmit(e.target);
+    //     e.target.remove();
+    // });
 });
 
 document.addEventListener('click', e => {
@@ -111,8 +118,9 @@ document.addEventListener('click', e => {
 
 window.addEventListener('load', () => {
     // in event of user back naving post-submission
-    document.querySelector('.spinner').remove();
-    form.classList.remove('hidden');
+    const spinner = document.querySelector('.spinner');
+    if(spinner) spinner.remove();
+    einForm.classList.remove('hidden');
     if(foreignCompanyFS.querySelector('input').checked) {
         _foreignCountrySelected();
     } else {

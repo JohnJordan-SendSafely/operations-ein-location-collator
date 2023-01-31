@@ -1,12 +1,20 @@
-const _getRowWithValue = function(searchString, columnNumber = 1) {
-    const values = SpreadsheetApp.getActiveSheet().getDataRange().getDisplayValues();
+const _companyStandardNames = {
+    "MegaCorp" : "MegaCorp TM",
+    "Monsters Incorporated": "Monsters Inc."
+};
+const _getCompanyStandardName = function (params) {
+    return _companyStandardNames[params["company-legal-name"]];
+};
+
+const _setSubmissionValue = function(searchString, columnNumber = 1) {
+    const submissionTrackingSheet = SpreadsheetApp.getActive().getSheetByName("EIN Submission Tracker");
+    const values = submissionTrackingSheet.getDataRange().getDisplayValues();
     // start at 1, to ignore header
     for(let i = 1, row; row = values[i]; i++){
         if(row[columnNumber - 1] === searchString) {
             // EIN is Column '3'
-            console.log(i, row);
             // getRange starts at top left (0,0) including first row => need offset; EIN at column '3'
-            SpreadsheetApp.getActiveSheet().getRange(i+1,3).setValue("Yes");
+            submissionTrackingSheet.getRange(i+1,3).setValue("Yes");
             return {found: true, row};
         }
     }
@@ -18,7 +26,7 @@ const _getRowWithValue = function(searchString, columnNumber = 1) {
 const test_updateTrackingSheet = function (e) {
     const _e = {
         parameter: {
-            "company-standard-name": "Monsters Inc.",
+            "company-legal-name": "Monsters Incorporated",
             "country-of-origin": "domestic",
             "employer-identification-number": '',
             "ein_digit_1": 1,
@@ -36,16 +44,13 @@ const test_updateTrackingSheet = function (e) {
     const ev = e || _e;
     updateTrackingSheet(ev);
 };
-// Can only be declared once in entire App Script project
-// function doPost(e) {
-//   updateTrackingSheet(e);
-// };
 
 var updateTrackingSheet = function(e){
     const lock = LockService.getPublicLock();
+    console.log('calling updateTrackingSheet...');
     try {
         const requestParams = e.parameter; //object
-        const companyStandardName = requestParams["company-standard-name"];
+        const companyStandardName = _getCompanyStandardName(requestParams);
         const ein = _getEIN(e);
         const origin = _getCountryOfOrigin(e);
         console.log('Updating tracking sheet data: ', companyStandardName, ein, origin);
@@ -54,15 +59,7 @@ var updateTrackingSheet = function(e){
             lock.waitLock(3000);
             const sheet = SpreadsheetApp.getActive().getSheetByName("EIN Submission Tracker");
 
-            const v = _getRowWithValue(companyStandardName);
-            const notV = _getRowWithValue("Foo");
-            //console.log('Value found? ', v);
-            //console.log('Value found for not V? ', notV);
-
-            console.log(sheet.getDataRange().getValues()[0][2]);
-            if(v.found) {
-
-            }
+            const v = _setSubmissionValue(companyStandardName);
 
             // const prevSubmissionValue = sheet.getRange(1, 1, 2).getValues();
             // const prevSubmissionId = prevSubmissionValue[prevSubmissionValue.length - 1] //actual ID
@@ -87,5 +84,6 @@ var updateTrackingSheet = function(e){
 
     } catch (e) {
         // error email here
+        console.log('Error: ', e);
     }
 };
