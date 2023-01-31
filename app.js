@@ -1,6 +1,25 @@
 const SCRIPT_PROP = PropertiesService.getScriptProperties();
+// Fake event data for testing.
+const _e = {
+    parameter: {
+        "company-legal-name": "MegaCorp",
+        "company-dba-name": "Honest Joes",
+        "country-of-origin": "domestic",
+        "employer-identification-number": '',
+        "ein_digit_1": 1,
+        "ein_digit_2": 2,
+        "ein_digit_3": 3,
+        "ein_digit_4": 4,
+        "ein_digit_5": 5,
+        "ein_digit_6": 6,
+        "ein_digit_7": 7,
+        "ein_digit_8": 8,
+        "ein_digit_9": 9,
+        "foreign_country": ""
+    }
+};
 const _setup = function() {
-    const doc = SpreadsheetApp.getActiveSpreadsheet();
+    const doc = SpreadsheetApp.getActive().getSheetByName("EIN Form Submissions");
     SCRIPT_PROP.setProperty("key", doc.getId());
     const sheet = doc.getSheets()[0];
     sheet.setName("EIN Form Submissions");
@@ -10,6 +29,7 @@ const _setup = function() {
     sheet.getRange(1,4).setValue("Employer Identification Number");
     sheet.getRange(1,5).setValue("Country of Origin");
     sheet.getRange(1,6).setValue("Timestamp");
+    // ToDO: setup of tracker form
     console.log("setup complete");
     //if (SCRIPT_PROP.getProperty("sendsafely_validation_key") == undefined) { SCRIPT_PROP.setProperty("sendsafely_validation_key", "") };
 };
@@ -36,7 +56,9 @@ const _getCountryOfOrigin = function (e) {
     return "error with form data";
 }
 const doPost = function(e){
-    return handleResponse(e);
+    const ev = e || _e; // real or fake data
+    handleResponse(ev);
+    updateTrackingSheet(ev);
 };
 const handleResponse = function(e){
     const lock = LockService.getPublicLock();
@@ -50,7 +72,7 @@ const handleResponse = function(e){
 
         try {
             lock.waitLock(3000);
-            const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+            const sheet = SpreadsheetApp.getActive().getSheetByName("EIN Form Submissions");
 
             const prevSubmissionValue = sheet.getRange(1, 1, 2).getValues();
             const prevSubmissionId = prevSubmissionValue[prevSubmissionValue.length - 1] //actual ID
@@ -79,23 +101,5 @@ const handleResponse = function(e){
 };
 
 const test_handleResponse = function () {
-    const _e = {
-        parameter: {
-            "company-legal-name": "MegaCorp",
-            "company-dba-name": "Honest Joes",
-            "country-of-origin": "domestic",
-            "employer-identification-number": '',
-            "ein_digit_1": 1,
-            "ein_digit_2": 2,
-            "ein_digit_3": 3,
-            "ein_digit_4": 4,
-            "ein_digit_5": 5,
-            "ein_digit_6": 6,
-            "ein_digit_7": 7,
-            "ein_digit_8": 8,
-            "ein_digit_9": 9,
-            "foreign_country": ""
-        }
-    };
     handleResponse(_e);
 }

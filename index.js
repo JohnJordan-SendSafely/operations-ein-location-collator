@@ -103,6 +103,7 @@ document.addEventListener('click', e => {
             if(tagName === "SELECT" || tagName === "INPUT") {
                 elem.value = "";
                 elem.setCustomValidity('');
+                elem.reportValidity();
             }
         });
     }
