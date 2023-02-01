@@ -32,12 +32,10 @@ const _getEIN = function(e) {
     for(let i = 1, digit; digit = params["ein_digit_" + i]; i++ ) {
         ein += digit;
     }
-    const einNum = parseInt(ein);
-    // catch 'NaN' or empty string (as 0)
-    if(einNum !== einNum || 0 === einNum) {
+    if(9 !== ein.length) {
         return "n/a";
     }
-    return einNum;
+    return ein;
 };
 const _setup = function() {
     const doc = SpreadsheetApp.getActive().getSheetByName("EIN Form Submissions");
@@ -61,8 +59,7 @@ const doPost = function(e){
     const ev = e || _e; // real or fake data
     handleResponse(ev);
     updateTrackingSheet(ev);
-    return HtmlService.createHtmlOutput("<h1>Submission received</h1><p>Thank you.</p>" +
-        "<p>If you have any questions about filling out this form, please contact <a href='mailto:billing@sendsafely.com'>billing@sendsafely.com</a>.</p>");
+    return ContentService.createTextOutput(JSON.stringify({status: "success"})).setMimeType(ContentService.MimeType.JSON);
 };
 const handleResponse = function(e){
     const lock = LockService.getPublicLock();
