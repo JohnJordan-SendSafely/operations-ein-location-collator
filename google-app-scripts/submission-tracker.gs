@@ -5,21 +5,26 @@ const _companyStandardNames = {
 const _getCompanyStandardName = function (params) {
     return _companyStandardNames[params["company-legal-name"]];
 };
-/**
- * @param {number} columnNumber column number of Company Name
- */
-const _setSubmissionValue = function(searchString, columnNumber = 2) {
+
+const _setSubmissionValue = function(searchString) {
     const submissionTrackingSheet = SpreadsheetApp.getActive().getSheetByName("EIN Submission Tracker");
     const values = submissionTrackingSheet.getDataRange().getDisplayValues();
-    console.log(values);
-    // start at 1, to ignore header
-    for(let i = 1, row; row = values[i]; i++){
-        console.log('iterating over in Tracker Sheet...', searchString, row[columnNumber - 1])
-        if(row[columnNumber - 1] === searchString) {
-            console.log('found match in Tracker Sheet...', searchString, row[columnNumber - 1]);
+    const offsetArrayToSheet = 1;
+
+    const header = values[0];
+    const columnNumber_CompanyName = 2;
+    const arrayIndexCompanyName = columnNumber_CompanyName - offsetArrayToSheet;
+    const columnNumber_Submitted = header.indexOf("Submitted") + offsetArrayToSheet;
+
+    // since header row is included in built-in Array methods
+    let sheetRowPos;
+
+    for(let i = offsetArrayToSheet, arrayRow; arrayRow = values[i]; i++){
+        sheetRowPos = i + 1;
+        if(arrayRow[arrayIndexCompanyName] === searchString) {
+            console.log('found match in Tracker Sheet...', searchString, arrayRow[arrayIndexCompanyName]);
             // EIN is Column '3'
-            // getRange starts at top left (0,0) including first row => need offset; EIN at column '3'
-            submissionTrackingSheet.getRange(i+1,3).setValue("Yes");
+            submissionTrackingSheet.getRange(sheetRowPos,columnNumber_Submitted).setValue("Yes");
             return {found: true, row};
         }
     }
