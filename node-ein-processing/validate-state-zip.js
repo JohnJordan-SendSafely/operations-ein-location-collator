@@ -1,4 +1,4 @@
-var getState = function (zipString) {
+const getState = function (zipString) {
 
     /* Ensure param is a string to prevent unpredictable parsing results */
     if (typeof zipString !== 'string') {
