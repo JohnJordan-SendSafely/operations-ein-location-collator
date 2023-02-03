@@ -30,6 +30,6 @@ const _getEINFromService = async function(requestParams) {
     }
 };
 
-var processSubmission = function(e) {
+const processSubmission = function(e) {
     const requestParams = e.parameter;
 };

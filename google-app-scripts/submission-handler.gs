@@ -40,7 +40,7 @@ const _getEIN = function(e) {
     return ein;
 };
 
-const _testHandleResponse = function () {
+const _testHandleSubmission = function () {
     handleSubmission(_e);
 };
 

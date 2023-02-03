@@ -5,13 +5,18 @@ const _companyStandardNames = {
 const _getCompanyStandardName = function (params) {
     return _companyStandardNames[params["company-legal-name"]];
 };
-
-const _setSubmissionValue = function(searchString, columnNumber = 1) {
+/**
+ * @param {number} columnNumber column number of Company Name
+ */
+const _setSubmissionValue = function(searchString, columnNumber = 2) {
     const submissionTrackingSheet = SpreadsheetApp.getActive().getSheetByName("EIN Submission Tracker");
     const values = submissionTrackingSheet.getDataRange().getDisplayValues();
+    console.log(values);
     // start at 1, to ignore header
     for(let i = 1, row; row = values[i]; i++){
+        console.log('iterating over in Tracker Sheet...', searchString, row[columnNumber - 1])
         if(row[columnNumber - 1] === searchString) {
+            console.log('found match in Tracker Sheet...', searchString, row[columnNumber - 1]);
             // EIN is Column '3'
             // getRange starts at top left (0,0) including first row => need offset; EIN at column '3'
             submissionTrackingSheet.getRange(i+1,3).setValue("Yes");
@@ -45,7 +50,7 @@ const test_updateTrackingSheet = function (e) {
     updateTrackingSheet(ev);
 };
 
-var updateTrackingSheet = function(e){
+const updateTrackingSheet = function(e){
     const lock = LockService.getPublicLock();
     console.log('calling updateTrackingSheet...');
     try {
