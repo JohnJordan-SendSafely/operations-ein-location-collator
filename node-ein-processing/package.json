@@ -1,0 +1,7 @@
+{
+  "name": "node-ein-processing",
+  "version": "1.0.0",
+  "dependencies": {
+    "make-fetch-happen": "^10.1.8"
+  }
+}
