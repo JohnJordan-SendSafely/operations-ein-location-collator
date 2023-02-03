@@ -9,8 +9,6 @@ let deDupedEINs = companyNameSearchResults.filter((rec, currIndex, self) => {
     return currIndex === firstIndexPos;
 });
 
-console.log(companyNameSearchResults.length, deDupedEINs.length);
-
 if(!deDupedEINs.length) {
     // no results for that company name
     // return response to client, indicating optimistic update (since Name Search is broken, and can validate TIN-Name match)
@@ -28,6 +26,7 @@ if(deDupedEINs.length === 1) {
         //TODO: email that ZIP code/State validation has failed
     }
 }
+
 if(deDupedEINs.length > 1) {
     // duplicates
     // return response to client, indicating optimistic update (since Name Search is broken, and can validate TIN-Name match)
