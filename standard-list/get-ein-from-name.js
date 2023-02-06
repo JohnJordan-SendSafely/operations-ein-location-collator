@@ -1,5 +1,5 @@
 const fs = require("fs");
-const validate = require("../node-ein-processing/validate-state-zip");
+const validate = require("../node-ein-processing/utils/validate-state-zip");
 const raw = fs.readFileSync('ein-api-results.json', 'utf-8');
 // const companyNameSearchResults = JSON.parse(raw).data;
 //
