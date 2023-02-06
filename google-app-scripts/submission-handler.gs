@@ -1,6 +1,6 @@
 const SCRIPT_PROP = PropertiesService.getScriptProperties();
 // Fake event data for testing.
-const _e = {
+const _eForm = {
     parameter: {
         "company-legal-name": "MegaCorp",
         "company-dba-name": "Honest Joes",
@@ -41,7 +41,7 @@ const _getEIN = function(e) {
 };
 
 const _testHandleSubmission = function () {
-    handleSubmission(_e);
+    handleSubmission(_eForm);
 };
 
 const handleSubmission = function(e){

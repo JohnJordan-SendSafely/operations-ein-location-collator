@@ -2,6 +2,7 @@ const _companyStandardNames = {
     "MegaCorp" : "MegaCorp TM",
     "Monsters Incorporated": "Monsters Inc."
 };
+
 const _getCompanyStandardName = function (params) {
     return _companyStandardNames[params["company-legal-name"]];
 };
@@ -23,7 +24,6 @@ const _setSubmissionValue = function(searchString) {
         sheetRowPos = i + 1;
         if(arrayRow[arrayIndexCompanyName] === searchString) {
             console.log('found match in Tracker Sheet...', searchString, arrayRow[arrayIndexCompanyName]);
-            // EIN is Column '3'
             submissionTrackingSheet.getRange(sheetRowPos,columnNumber_Submitted).setValue("Yes");
             return {found: true, row};
         }
