@@ -29,6 +29,7 @@ const getSearchResults = async function(companyName) {
             // no results for that company name
             console.log(`No results available for this company (${companyName})`);
             response.issue = issues['0'];
+            response.einRecord = false;
             return response;
         }
 

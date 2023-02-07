@@ -29,6 +29,7 @@ const c = {
     '2022': '',
     sellID: '245603276',
     companyName: 'Meepo Board',
+    country: "United States",
     'In Prev Sheet?': '0',
     Email: '#REF!',
     'Additional Emails': '#N/A',
@@ -83,7 +84,21 @@ const getTrackingSheetFormat = function (serviceResult, serviceResultData, initi
 
     // 3. serviceResultData: zipCode, State
     // Want revenue sheet name to be source of TRUTH! (=> initial result is not over-written
-    return {...serviceResult, ...serviceResultData, ...initialList};
+    return {...format, ...serviceResult, ...serviceResultData, ...initialList};
+};
+
+const postUpdateToAppScript = async function (formattedRecord) {
+    console.log('formattedRecord is: ', formattedRecord);
+    const postToSheet = {
+        type: 'update',
+        formattedRecord
+    };
+    const updateSheet = await fetch('https://script.google.com/macros/s/AKfycbwC6vnoawSU_jMhzb0YCd-xXeYMQaEPAeBKo5oGQYPJxGX3nriENjTPNDudo5N9bYRq/exec',
+        {
+            method:'post',
+            body: JSON.stringify(postToSheet)
+        });
+    return  await updateSheet.json();
 };
 
 // 1 load from CSV, a JSON arry
@@ -93,27 +108,23 @@ const getTrackingSheetFormat = function (serviceResult, serviceResultData, initi
     //let companyInitialist = await csv().fromFile(csvFilePath);
     let searchResult;
     // Using our records as source of Truth
-    let companyInitialList = [c];
+    let companyInitialList = [c, c2];
 
     for(let i = 0, company; company = companyInitialList[i]; i+=1) {
         searchResult = await getSearchResults(company.companyName);
+
+        if(0 === searchResult.num) {
+            console.log(searchResult);
+            let formattedRecord = getTrackingSheetFormat(searchResult, {}, company);
+            const r = await postUpdateToAppScript(formattedRecord);
+            console.log('App Script response: ', r);
+        }
+
         if(1 === searchResult.num && undefined === searchResult.issue) {
-            console.log('single, happy path found');
-            //let r = getTrackingSheetFormat(company, searchResult.data[0]);
             let formattedRecord = getTrackingSheetFormat(searchResult, searchResult.data[0], company);
-            console.log('formattedRecord is: ', formattedRecord);
-            const postToSheet = {
-                type: 'update',
-                formattedRecord
-            };
-            // POST to App Script
-            const updateSheet = await fetch('https://script.google.com/macros/s/AKfycbwC6vnoawSU_jMhzb0YCd-xXeYMQaEPAeBKo5oGQYPJxGX3nriENjTPNDudo5N9bYRq/exec',
-                {
-                    method:'post',
-                    body: JSON.stringify(postToSheet)
-                });
-            const something = await updateSheet.json();
-            console.log(something);
+            const r = await postUpdateToAppScript(formattedRecord);
+            console.log('App Script response: ', r);
+
         }
     }
 })();
