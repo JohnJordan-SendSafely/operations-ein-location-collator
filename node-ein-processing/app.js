@@ -1,7 +1,8 @@
-const {companyLookup} = require("./company-name-search");
-const csvFilePath='./ex-customer-list - Sheet1.csv';
-const csv=require('csvtojson');
-const validateZIP = require("./validate-state-zip");
+const {getSearchResults} = require('./utils/process-search-results');
+const csvFilePath='./models/ex-customer-list - Sheet1.csv';
+const csv = require('csvtojson');
+const fetch = require("make-fetch-happen");
+const fs = require('fs');
 require('dotenv').config();
 
 
@@ -18,6 +19,8 @@ require('dotenv').config();
 //     }
 // })();
 
+
+
 const c = {
     '2018': '',
     '2019': 'x',
@@ -33,58 +36,88 @@ const c = {
     field12: '#N/A'
 };
 
-(async function(){
-    try {
-        //const apiResponse = await companyLookup(c.companyName);
-        const apiResponse = await companyLookup('MBP Group');
-        const responseStatus = apiResponse.status; //'Success' or 'Error'
-        const companyNameSearchResults = apiResponse.data;
 
-        if('success' !== responseStatus.toLowerCase()) {
-            console.log('Error in connecting to EIN service');
-            return;
+const c2 = {
+    '2018': '',
+    '2019': 'x',
+    '2020': 'x',
+    '2021': 'x',
+    '2022': '',
+    sellID: '233349462',
+    companyName: 'MBP Group',
+    'In Prev Sheet?': '0',
+    Email: '#REF!',
+    'Additional Emails': '#N/A',
+    field11: '#N/A',
+    field12: '#N/A'
+};
+
+
+
+const getTrackingSheetFormat = function (serviceResult, serviceResultData, initialList) {
+    // Some of these properties will only appear in form submissions, e.g. D/B/A name
+    const format = {
+        sellID: '',
+        companyName: '',
+        dba: '',
+        submitted: '',
+        submissionId: '',
+        dateOfSubmission: '',
+        country: '',
+        ein: '',
+        "EIN + Name Auto Validated": '',
+        state: '',
+        zipCode: '',
+        "State + ZIP Auto Validated": '',
+        "Issue w/ Submission": false,
+        "Issue Type": '',
+        "Issue Resolved": ''
+    };
+    if(serviceResult.issue) {
+        format["Issue w/ Submission"] = true;
+        format['Issue Type'] = serviceResult.issue;
+    }
+
+    // 1. serviceResult: zipValidated, issue
+    // initialList: sellId and companyName, dba, submtited, submissionId, data of submission, country, ein (maybe)
+
+    // 3. serviceResultData: zipCode, State
+    // Want revenue sheet name to be source of TRUTH! (=> initial result is not over-written
+    return {...serviceResult, ...serviceResultData, ...initialList};
+};
+
+// 1 load from CSV, a JSON arry
+// 2 For each company, look up name
+(async function (){
+
+    //let companyInitialist = await csv().fromFile(csvFilePath);
+    let searchResult;
+    // Using our records as source of Truth
+    let companyInitialList = [c];
+
+    for(let i = 0, company; company = companyInitialList[i]; i+=1) {
+        searchResult = await getSearchResults(company.companyName);
+        if(1 === searchResult.num && undefined === searchResult.issue) {
+            console.log('single, happy path found');
+            //let r = getTrackingSheetFormat(company, searchResult.data[0]);
+            let formattedRecord = getTrackingSheetFormat(searchResult, searchResult.data[0], company);
+            console.log('formattedRecord is: ', formattedRecord);
+            const postToSheet = {
+                type: 'update',
+                formattedRecord
+            };
+            // POST to App Script
+            const updateSheet = await fetch('https://script.google.com/macros/s/AKfycbwC6vnoawSU_jMhzb0YCd-xXeYMQaEPAeBKo5oGQYPJxGX3nriENjTPNDudo5N9bYRq/exec',
+                {
+                    method:'post',
+                    body: JSON.stringify(postToSheet)
+                });
+            const something = await updateSheet.json();
+            console.log(something);
         }
-
-
-        if(!companyNameSearchResults.length) {
-            // no results for that company name
-            // return response to client, indicating optimistic update (since Name Search is broken, and can validate TIN-Name match)
-            /*
-                can validate customer submission EIN against name manually since IRS database available realtime
-             */
-            console.log(`no results available for this company (${c.companyName})`);
-        }
-
-        let deDupedEINs = companyNameSearchResults.filter((rec, currIndex, self) => {
-            const firstIndexPos = self.findIndex(t => t.ein === rec.ein);
-            // not a duplicate if first occurrence is same as current index position
-            return currIndex === firstIndexPos;
-        });
-
-        console.log('Number of matches returned: ', deDupedEINs.length);
-
-        if(deDupedEINs.length === 1) {
-            console.log('One result found...', companyNameSearchResults[0])
-            // one result, proceed to TIN validation
-            const testCase = companyNameSearchResults[0];
-            const fiveDigitZIP = testCase.zipCode.slice(0,5)
-            console.log(testCase.state, fiveDigitZIP, validateZIP.getState(fiveDigitZIP) === testCase.state);
-
-            if(validateZIP.getState(fiveDigitZIP) !== testCase.state) {
-                //TODO: email that ZIP code/State validation has failed
-            } else {
-                console.log('Validation of Zip confirmed...')
-            }
-        }
-
-        if(deDupedEINs.length > 1) {
-            // duplicates
-            // return response to client, indicating optimistic update (since Name Search is broken, and can validate TIN-Name match)
-            // will require manual parsing of names to find
-
-            console.log('deDupedEINs: ', deDupedEINs);
-        }
-    } catch(e) {
-        console.error(e);
     }
 })();
+
+// Read/write
+//searchResult = fs.readFileSync('./models/search-result-ein.json', 'UTF-8');
+//fs.writeFileSync('./models/search-result-ein.json', JSON.stringify(searchResult));

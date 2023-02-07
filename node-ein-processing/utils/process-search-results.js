@@ -10,7 +10,8 @@ const getSearchResults = async function(companyName) {
     };
     let response = {
         num: 0,
-        data: []
+        data: [],
+        einRecord: false
     };
     try {
         const apiResponse = await companyLookup(companyName);
@@ -55,6 +56,7 @@ const getSearchResults = async function(companyName) {
             }
             response.num = 1;
             response.data.push(testCase);
+            response.einRecord = true;
             return response;
         }
 
@@ -62,6 +64,7 @@ const getSearchResults = async function(companyName) {
             // duplicates
             console.log(`Multiple responses returned for this company (${companyName}): `);
             response.num = deDupedEINs.length;
+            response.einRecord = true;
             response.data = deDupedEINs;
             response.issue = issues['2'];
             return response;
