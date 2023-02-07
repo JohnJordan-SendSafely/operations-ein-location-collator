@@ -13,15 +13,16 @@ const getTrackingSheetFormat = function (serviceResult, serviceResultData, initi
         sellID: '',
         companyName: '',
         dba: '',
-        submitted: '',
-        submissionId: '',
         dateOfSubmission: '',
         country: '',
         ein: '',
         einRecord: '',
-        "Name Record in EIN Service": '',
         "EIN + Name Auto Validated": '',
+        fullAddress: '',
+        "Name Record in EIN Service": '',
         state: '',
+        submitted: '',
+        submissionId: '',
         zipCode: '',
         "State + ZIP Auto Validated": '',
         "Issue w/ Submission": false,
@@ -34,6 +35,10 @@ const getTrackingSheetFormat = function (serviceResult, serviceResultData, initi
     if(serviceResult.issue) {
         o["Issue w/ Submission"] = true;
         o['Issue Type'] = serviceResult.issue;
+    }
+    if(serviceResultData) {
+        const {address, address2, city} = serviceResultData;
+        o.fullAddress = `${address}. \n${address2}. \n${city}.`;
     }
     o.einRecord = serviceResult.einRecord;
     return o;
