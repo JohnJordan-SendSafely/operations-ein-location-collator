@@ -1,0 +1,8 @@
+.env
+node_modules/
+package-lock.json
+.xml
+models/ex-customer-list - Sheet1.csv
+.idea/
+../.idea/
+../.idea/*

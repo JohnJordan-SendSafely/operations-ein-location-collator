@@ -38,7 +38,7 @@ const getTrackingSheetFormat = function (serviceResult, serviceResultData, initi
     }
     if(serviceResultData) {
         const {address, address2, city} = serviceResultData;
-        o.fullAddress = `${address}. \n${address2}. \n${city}.`;
+        o.fullAddress = `${address}\n${address2}\n${city}`;
     }
     o.einRecord = serviceResult.einRecord;
     return o;
@@ -70,13 +70,15 @@ const postUpdateToAppScript = async function (formattedRecord) {
 
     let ein, zip, haveSearchedEIN;
     for(let i = 0, company; company = companyInitialList[i]; i+=1) {
-        ein = parseInt(company.ein, 10);
+        ein = parseInt(company.EIN, 10);
         zip = parseInt(company.ZIP, 10);
         // these fields required on Google App Script backend
         company.companyName = company['Company Name (Standardized)'];
         company.einRecord = company['Name Record in EIN Service'];
         company.einRecord.toUpperCase();
+        company.fullAddress = company['Address'];
         haveSearchedEIN = company.einRecord === "TRUE" || company.einRecord === "FALSE"; // Boolean -> String in .csv
+
         if(!haveSearchedEIN) {
             console.log(`need to search ${company.companyName}, ${company.state} ...`);
             searchResult = await getSearchResults(company.companyName);
@@ -101,8 +103,6 @@ const postUpdateToAppScript = async function (formattedRecord) {
                 const r = await postUpdateToAppScript(formattedRecord);
                 console.log('App Script response: ', r);
             }
-        } else {
-            //console.log('have searched already...')
         }
     }
 })();
