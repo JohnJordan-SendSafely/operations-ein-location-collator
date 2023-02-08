@@ -78,7 +78,7 @@ const postUpdateToAppScript = async function (formattedRecord) {
         company.einRecord.toUpperCase();
         haveSearchedEIN = company.einRecord === "TRUE" || company.einRecord === "FALSE"; // Boolean -> String in .csv
         if(!haveSearchedEIN) {
-            console.log('need to search...');
+            console.log(`need to search ${company.companyName}, ${company.state} ...`);
             searchResult = await getSearchResults(company.companyName);
             //console.log('searchResult: ', searchResult);
 
@@ -89,7 +89,7 @@ const postUpdateToAppScript = async function (formattedRecord) {
                 console.log('App Script response: ', r);
             }
 
-            if(1 === searchResult.num && undefined === searchResult.issue) {
+            if(1 === searchResult.num) {
                 let formattedRecord = getTrackingSheetFormat(searchResult, searchResult.data[0], company);
                 const r = await postUpdateToAppScript(formattedRecord);
                 console.log('App Script response: ', r);
@@ -102,7 +102,7 @@ const postUpdateToAppScript = async function (formattedRecord) {
                 console.log('App Script response: ', r);
             }
         } else {
-            console.log('have searched already...')
+            //console.log('have searched already...')
         }
     }
 })();

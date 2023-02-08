@@ -35,7 +35,8 @@ const getSearchResults = async function(companyName) {
 
         console.log('Number of raw matches returned (with possible duplicates): ', companyNameSearchResults.length);
         let deDupedEINs = companyNameSearchResults.filter((rec, currIndex, self) => {
-            const firstIndexPos = self.findIndex(t => t.ein === rec.ein);
+            // Two companies, same EIN in Edison (NE and NJ) => check state code as well
+            const firstIndexPos = self.findIndex(t => t.ein === rec.ein && t.state === rec.state);
             // not a duplicate if first occurrence is same as current index position
             return currIndex === firstIndexPos;
         });
