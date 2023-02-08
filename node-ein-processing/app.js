@@ -1,10 +1,15 @@
 const {getSearchResults} = require('./utils/process-search-results');
 const csv = require('csvtojson');
 const fetch = require("make-fetch-happen");
-const fs = require('fs');
+const Console = require("console");
 require('dotenv').config();
 
 
+const isStatedAsForeignCountry = function (country) {
+    // if value present and NOT USA => foreign
+    const c = country.toUpperCase();
+    return c && c !== "USA";
+};
 
 
 const getTrackingSheetFormat = function (serviceResult, serviceResultData, initialList) {
@@ -38,7 +43,7 @@ const getTrackingSheetFormat = function (serviceResult, serviceResultData, initi
     }
     if(serviceResultData) {
         const {address, address2, city} = serviceResultData;
-        o.fullAddress = `${address}\n${address2}\n${city}`;
+        o.fullAddress = `${address}, ${address2}, ${city}`;
     }
     o.einRecord = serviceResult.einRecord;
     return o;
@@ -79,8 +84,8 @@ const postUpdateToAppScript = async function (formattedRecord) {
         company.fullAddress = company['Address'];
         haveSearchedEIN = company.einRecord === "TRUE" || company.einRecord === "FALSE"; // Boolean -> String in .csv
 
-        if(!haveSearchedEIN) {
-            console.log(`need to search ${company.companyName}, ${company.state} ...`);
+        if(!haveSearchedEIN && !isStatedAsForeignCountry(company.Country)) {
+            console.log(`need to search ${company.companyName}, ${company} ...`);
             searchResult = await getSearchResults(company.companyName);
             //console.log('searchResult: ', searchResult);
 
