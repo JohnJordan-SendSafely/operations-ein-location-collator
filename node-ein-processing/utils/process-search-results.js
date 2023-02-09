@@ -19,7 +19,7 @@ const getSearchResults = async function(companyName) {
         const companyNameSearchResults = apiResponse.data;
 
         if('success' !== responseStatus.toLowerCase()) {
-            console.log('Error in connecting to EIN service.');
+            console.log('Error in connecting to EIN service / Search term too short.');
             response.issue = issues.error;
             return response;
         }

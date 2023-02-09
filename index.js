@@ -2,7 +2,9 @@ const einForm = document.getElementById('ein_form');
 const domesticCompanyFS = document.getElementById('domestic-company');
 const foreignCompanyFS = document.getElementById('foreign-company');
 const countrySelect = foreignCompanyFS.querySelector('select');
+const foreignCountryList = foreignCompanyFS.querySelector("#foreign-country-list");
 const taxExemptFieldset = document.getElementById('tax-exempt-fieldset');
+const taxRadios = taxExemptFieldset.querySelectorAll('[type="radio"]');
 const einFieldSet = document.getElementById('ein-fieldset');
 const einInputs = domesticCompanyFS.querySelectorAll('input');
 
@@ -18,7 +20,7 @@ const _checkForMultiDigits = function (elem) {
     }
 }
 
-const _clearEINValues = function () {
+const _clearEINValues = function (wipeValue = false) {
     einInputs.forEach(elem => {
         elem.removeAttribute('required');
         if(wipeValue) {
@@ -36,15 +38,17 @@ const _domesticCountrySelected = function (wipeValue = false) {
     if(wipeValue) {
         countrySelect.value = "";
     }
-    document.getElementById('foreign-fieldset').classList.add('hidden');
+    foreignCountryList.classList.add('hidden');
     taxExemptFieldset.classList.remove('hidden')
     if('no' === taxExemptFieldset.querySelector(':checked').value.toLowerCase()) {
         document.getElementById('ein-fieldset').classList.remove('hidden');
+        einInputs.forEach(elem => {
+            elem.setAttribute('required', 'required');
+        })
+    } else {
+        einInputs.forEach(elem => {elem.removeAttribute('required')});
+        taxRadios.forEach(r => r.setAttribute('required', 'required'));
     }
-    taxExemptFieldset.querySelectorAll('[required]').forEach(r => r.setAttribute('required', 'required'));
-    einInputs.forEach(elem => {
-        elem.setAttribute('required', 'required');
-    })
 };
 
 const _setUIFormSubmit = function (form) {
@@ -63,7 +67,8 @@ const _setUISuccessMsg = function () {
     if(s) {
         s.innerHTML = `<div class="success"><span>✅</span>
             <h2>Success!</h2>
-            <p>Your submission has been received.</p>
+            <p>Your submission has been received. If you have any questions about this request, please contact <a href="mailto:billing@sendsafely.com">billing@sendsafely.com</a>.</p>
+            <p>Thank you for being a SendSafely customer!</p>
         </div>`;
     }
 };
@@ -74,11 +79,11 @@ const _setUISuccessMsg = function () {
  */
 const _foreignCountrySelected = function (wipeValue = false) {
     countrySelect.setAttribute('required', 'required');
-    document.getElementById('foreign-fieldset').classList.remove('hidden');
-    document.getElementById('ein-fieldset').classList.add('hidden');
-    document.getElementById('tax-exempt-fieldset').classList.add('hidden');
-    taxExemptFieldset.querySelectorAll('[required]').forEach(r => r.removeAttribute('required'));
-    _clearEINValues();
+    foreignCountryList.classList.remove('hidden');
+    einFieldSet.classList.add('hidden');
+    taxExemptFieldset.classList.add('hidden');
+    taxRadios.forEach(r => r.removeAttribute('required'));
+    _clearEINValues(wipeValue);
 };
 
 document.addEventListener('change', function (e){
@@ -91,11 +96,18 @@ document.addEventListener('change', function (e){
             _foreignCountrySelected();
         }
     }
+    console.log('a change...')
     if('radio' === elem.type && 'tax-exempt' === elem.name) {
         if('yes' === elem.value.toLowerCase()) {
             einFieldSet.classList.add('hidden');
+            einInputs.forEach(elem => {
+                elem.removeAttribute('required');
+            })
         } else {
             einFieldSet.classList.remove('hidden');
+            einInputs.forEach(elem => {
+                elem.setAttribute('required', 'required');
+            })
         }
     }
     if('number' === elem.type) {

@@ -14,24 +14,24 @@
         <section>
             <header>
                 <h1>SendSafely Customer Information Verification</h1>
-                <p>SendSafely is required to maintain accurate records about its customers for compliance purposes. </p>
+                <p>SendSafely is required to maintain accurate records about its customers for compliance purposes. Please use the following form to provide the requested information on behalf of your company.</p>
             </header>
             <hr>
             <h2>Instructions</h2>
             <p>
-                Fill in your <strong>legal company name</strong>, and the D/B/A name (if applicable) of the entity paying for SendSafely services.
+                Fill in your <strong>legal company name</strong>, and the D/B/A name (if applicable), of the entity paying for SendSafely services.
             </p>
             <p>
-                If your company is incorporated in the United States:
+                If your company is incorporated <strong>in the United States</strong>:
             </p>
             <ul>
-                <li>check the box next to “Domestic company” and provide your IRS-issued <strong>Employer Identification Number</strong> as it appears on your W-9.</li>
+                <li>Check the box next to “Domestic company” and provide your IRS-issued <strong>Employer Identification Number</strong> as it appears on your W-9.</li>
             </ul>
             <p>
-                If your company is incorporated outside of the United States:
+                If your company is incorporated <strong>outside of the United States</strong>:
             </p>
             <ul>
-                <li>check the box next to “Foreign company” and provide the <strong>name of the country</strong> in which the company is registered</li>
+                <li>Check the box next to “Foreign company” and provide the <strong>name of the country</strong> in which the company is registered.</li>
             </ul>
             <hr>
             <form 
@@ -90,8 +90,8 @@
                                 <input type="radio" name="country-of-origin" value="foreign" required>
                                 <span>Foreign company <small class="note">(incorporated outside of the United States)</small></span>
                             </label>
-                            <div class="nested hidden" id="foreign-fieldset">
-                                <label for="country">Choose a Country:<span class="req">*</span></label>
+                            <div class="nested hidden" id="foreign-country-list">
+                                <label for="country">Country of registration:<span class="req">*</span></label>
                                 <select id="country" name="foreign-country">
                                     <option value="" disabled selected>--Select from the listed countries--</option>
                                     <option value="United Kingdom">United Kingdom</option>
@@ -353,7 +353,7 @@
                 <input type="submit">
             </form>
             <hr>
-            If you have any questions about filling out this form, please contact <a href='mailto:billing@sendsafely.com'>billing@sendsafely.com</a>.
+            If you have any questions about filling out this form or prefer to respond via email instead, please contact <a href='mailto:billing@sendsafely.com'>billing@sendsafely.com</a>.
         </section>
     </main>
 </body>

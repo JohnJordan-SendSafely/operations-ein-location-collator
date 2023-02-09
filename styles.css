@@ -155,6 +155,10 @@ h2 {
     font-size: 2rem;
 }
 
+header > p:last-of-type {
+    margin-bottom: 3rem;
+}
+
 .hidden {
     animation: hide 200ms ease-in-out forwards;
 }
@@ -296,9 +300,6 @@ legend {
     font-weight: normal;
 }
 
-p:last-of-type {
-    margin-bottom: 3rem;
-}
 
 .req {
     color: #ff0000;
