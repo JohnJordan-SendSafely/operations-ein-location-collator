@@ -68,8 +68,6 @@ const postUpdateToAppScript = async function (formattedRecord) {
 
     let searchResult;
     // Using our records as source of Truth
-    // let companyInitialList = [c, c2];
-    // const csvFilePath='./models/ex-customer-list - Sheet1.csv';
     const csvFilePath = './models/operations-ein-location-collator - EIN Submission Tracker.csv';
     const companyInitialList = await csv().fromFile(csvFilePath);
 
@@ -78,13 +76,17 @@ const postUpdateToAppScript = async function (formattedRecord) {
         ein = parseInt(company.EIN, 10);
         zip = parseInt(company.ZIP, 10);
         // these fields required on Google App Script backend
-        company.companyName = company['Company Name (Standardized)'];
+        company.companyName = company['Company Name (Revenue Sheet)'];
         company.einRecord = company['Name Record in EIN Service'];
         company.einRecord.toUpperCase();
         company.fullAddress = company['Address'];
+        company.issuePrevSubmission = company['Issue w/ Submission'];
+        // has a previous search been done, regardless of value
         haveSearchedEIN = company.einRecord === "TRUE" || company.einRecord === "FALSE"; // Boolean -> String in .csv
 
-        if(!haveSearchedEIN && !isStatedAsForeignCountry(company.Country)) {
+        const shortName = company.companyName.length < 4; // EIN service min length
+
+        if(!haveSearchedEIN && !isStatedAsForeignCountry(company.Country) && !shortName) {
             console.log(`need to search ${company.companyName}, ${company} ...`);
             searchResult = await getSearchResults(company.companyName);
             //console.log('searchResult: ', searchResult);
@@ -105,6 +107,22 @@ const postUpdateToAppScript = async function (formattedRecord) {
             if(2 <= searchResult.num) {
                 console.log('more than one result...');
                 let formattedRecord = getTrackingSheetFormat(searchResult, {}, company);
+                const r = await postUpdateToAppScript(formattedRecord);
+                console.log('App Script response: ', r);
+            }
+        }
+
+        // If Revenue sheet Company name returns duplicate results, perform query against legal name (manual or customer entered)
+        company.legalName = company['Company Name (Legal)'];
+        if(haveSearchedEIN && !isStatedAsForeignCountry(company.Country) && !ein && company.legalName) {
+            console.log('searching for ...', company.legalName);
+            searchResult = await getSearchResults(company.legalName);
+            if(1 === searchResult.num) {
+                let formattedRecord = getTrackingSheetFormat(searchResult, searchResult.data[0], company);
+                // initial company record overrides all, so update these fields
+                formattedRecord['Issue w/ Submission'] = '';
+                formattedRecord['Issue Type'] = '';
+                formattedRecord['Issue Resolved'] = 'Searched legal name to get EIN result';
                 const r = await postUpdateToAppScript(formattedRecord);
                 console.log('App Script response: ', r);
             }
