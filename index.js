@@ -2,6 +2,8 @@ const einForm = document.getElementById('ein_form');
 const domesticCompanyFS = document.getElementById('domestic-company');
 const foreignCompanyFS = document.getElementById('foreign-company');
 const countrySelect = foreignCompanyFS.querySelector('select');
+const taxExemptFieldset = document.getElementById('tax-exempt-fieldset');
+const einFieldSet = document.getElementById('ein-fieldset');
 const einInputs = domesticCompanyFS.querySelectorAll('input');
 
 
@@ -15,6 +17,15 @@ const _checkForMultiDigits = function (elem) {
         elem.setCustomValidity('');
     }
 }
+
+const _clearEINValues = function () {
+    einInputs.forEach(elem => {
+        elem.removeAttribute('required');
+        if(wipeValue) {
+            elem.value = "";
+        }
+    });
+};
 /**
  *
  * @param {boolean} wipeValue removes data input in 'foreign-country' radio option
@@ -25,8 +36,12 @@ const _domesticCountrySelected = function (wipeValue = false) {
     if(wipeValue) {
         countrySelect.value = "";
     }
-    foreignCompanyFS.querySelector('.nested').classList.add('hidden');
-    domesticCompanyFS.querySelector('.nested').classList.remove('hidden');
+    document.getElementById('foreign-fieldset').classList.add('hidden');
+    taxExemptFieldset.classList.remove('hidden')
+    if('no' === taxExemptFieldset.querySelector(':checked').value.toLowerCase()) {
+        document.getElementById('ein-fieldset').classList.remove('hidden');
+    }
+    taxExemptFieldset.querySelectorAll('[required]').forEach(r => r.setAttribute('required', 'required'));
     einInputs.forEach(elem => {
         elem.setAttribute('required', 'required');
     })
@@ -59,24 +74,28 @@ const _setUISuccessMsg = function () {
  */
 const _foreignCountrySelected = function (wipeValue = false) {
     countrySelect.setAttribute('required', 'required');
-    foreignCompanyFS.querySelector('.nested').classList.remove('hidden');
-    domesticCompanyFS.querySelector('.nested').classList.add('hidden');
-    einInputs.forEach(elem => {
-        elem.removeAttribute('required');
-        if(wipeValue) {
-            elem.value = "";
-        }
-    })
+    document.getElementById('foreign-fieldset').classList.remove('hidden');
+    document.getElementById('ein-fieldset').classList.add('hidden');
+    document.getElementById('tax-exempt-fieldset').classList.add('hidden');
+    taxExemptFieldset.querySelectorAll('[required]').forEach(r => r.removeAttribute('required'));
+    _clearEINValues();
 };
 
 document.addEventListener('change', function (e){
     const elem = e.target;
-    if('radio' === elem.type) {
+    if('radio' === elem.type && 'country-of-origin' === elem.name) {
         const parentFS = elem.parentNode.parentNode;
         if(parentFS.id === "domestic-company") {
             _domesticCountrySelected();
         } else {
             _foreignCountrySelected();
+        }
+    }
+    if('radio' === elem.type && 'tax-exempt' === elem.name) {
+        if('yes' === elem.value.toLowerCase()) {
+            einFieldSet.classList.add('hidden');
+        } else {
+            einFieldSet.classList.remove('hidden');
         }
     }
     if('number' === elem.type) {
@@ -90,12 +109,17 @@ document.addEventListener('input', e => {
        _checkForMultiDigits(elem);
     }
 });
+
 document.addEventListener('submit', function (e){
     e.preventDefault();
     if(foreignCompanyFS.querySelector('input').checked) {
         _foreignCountrySelected(true);
     } else {
         _domesticCountrySelected(true);
+        if('yes' === taxExemptFieldset.querySelector(':checked').value.toLowerCase()) {
+            // avoid passing to back end
+            _clearEINValues();
+        }
     }
     const form = e.target;
 

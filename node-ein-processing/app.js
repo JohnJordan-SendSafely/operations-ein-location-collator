@@ -115,14 +115,17 @@ const postUpdateToAppScript = async function (formattedRecord) {
         // If Revenue sheet Company name returns duplicate results, perform query against legal name (manual or customer entered)
         company.legalName = company['Company Name (Legal)'];
         if(haveSearchedEIN && !isStatedAsForeignCountry(company.Country) && !ein && company.legalName) {
-            console.log('searching for ...', company.legalName);
+            console.log('searching for (legal name)... ', company.legalName);
             searchResult = await getSearchResults(company.legalName);
             if(1 === searchResult.num) {
                 let formattedRecord = getTrackingSheetFormat(searchResult, searchResult.data[0], company);
                 // initial company record overrides all, so update these fields
                 formattedRecord['Issue w/ Submission'] = '';
                 formattedRecord['Issue Type'] = '';
-                formattedRecord['Issue Resolved'] = 'Searched legal name to get EIN result';
+                formattedRecord['Issue Resolved'] = 'Searched legal name to get unique EIN result';
+                if(shortName) {
+                    formattedRecord['Issue Resolved'] = 'Searched legal name to get an EIN result (revenue sheet name was too short)';
+                }
                 const r = await postUpdateToAppScript(formattedRecord);
                 console.log('App Script response: ', r);
             }

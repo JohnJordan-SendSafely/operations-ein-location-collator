@@ -321,6 +321,14 @@ strong {
     font-weight: bold;
 }
 
+.tax {
+    display: flex;
+}
+
+.tax > label {
+    min-width: 5rem;
+}
+
 ul:last-of-type {
     margin-bottom: 3rem;
 }

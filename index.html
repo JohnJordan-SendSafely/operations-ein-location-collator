@@ -45,7 +45,7 @@
                         <input id="legal-company-name" type="text" name="company-legal-name" required>
                         <div class="nested">
                             <label for="DBA-company-name" class="optional">D/B/A Name (if applicable)</label>
-                            <input id="DBA-company-name" type="text" name="company-dba-name" >
+                            <input id="DBA-company-name" type="text" name="company-dba-name" placeholder="Doing business as (if not legal name)">
                         </div>
                     </fieldset>
                 </div>
@@ -57,7 +57,12 @@
                                 <input type="radio" name="country-of-origin" value="domestic" required checked>
                                 <span>Domestic company <small class="note">(incorporated in the United States)</small></span>
                             </label>
-                            <fieldset class="nested">
+                            <fieldset class="nested tax" id="tax-exempt-fieldset">
+                                <legend>Tax-Exempt?</legend>
+                                <label><input type="radio" name="tax-exempt" value="yes" required> Yes</label>
+                                <label><input type="radio" name="tax-exempt" value="no" required checked>No</label>
+                            </fieldset>
+                            <fieldset class="nested" id="ein-fieldset">
                                 <legend>Employer Identification Number<span class="req">*</span></legend>
                                 <label class="sr-only" for="ein_1">EIN 1st Digit</label>
                                 <input type="number" title="Whole number between 0 and 9" id="ein_1" min="0" max="9" name="ein_digit_1" required>
@@ -85,7 +90,7 @@
                                 <input type="radio" name="country-of-origin" value="foreign" required>
                                 <span>Foreign company <small class="note">(incorporated outside of the United States)</small></span>
                             </label>
-                            <div class="nested hidden">
+                            <div class="nested hidden" id="foreign-fieldset">
                                 <label for="country">Choose a Country:<span class="req">*</span></label>
                                 <select id="country" name="foreign-country">
                                     <option value="" disabled selected>--Select from the listed countries--</option>
