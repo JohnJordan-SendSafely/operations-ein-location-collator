@@ -24,7 +24,6 @@ const getSearchResults = async function(companyName) {
             return response;
         }
 
-
         if(!companyNameSearchResults.length) {
             // no results for that company name
             console.log(`No results available for this company (${companyName})`);
