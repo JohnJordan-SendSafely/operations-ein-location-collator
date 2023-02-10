@@ -6,3 +6,4 @@ models/ex-customer-list - Sheet1.csv
 .idea/
 ../.idea/
 ../.idea/*
+.DS_Store
