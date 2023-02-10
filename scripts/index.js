@@ -1,13 +1,12 @@
 const einForm = document.getElementById('ein_form');
 const domesticCompanyFS = document.getElementById('domestic-company');
 const foreignCompanyFS = document.getElementById('foreign-company');
-const countrySelect = foreignCompanyFS.querySelector('select');
+const foreignCountrySelect = foreignCompanyFS.querySelector('select');
 const foreignCountryList = foreignCompanyFS.querySelector("#foreign-country-list");
 const taxExemptFieldset = document.getElementById('tax-exempt-fieldset');
 const taxRadios = taxExemptFieldset.querySelectorAll('[type="radio"]');
 const einFieldSet = document.getElementById('ein-fieldset');
 const einInputs = domesticCompanyFS.querySelectorAll('input');
-
 
 const _checkForMultiDigits = function (elem) {
     const multiDigitInput = !elem.value.match(/^(?<!\d)\d$/);
@@ -20,7 +19,7 @@ const _checkForMultiDigits = function (elem) {
     }
 }
 
-const _clearEINValues = function (wipeValue = false) {
+const _clearEINInputs = function (wipeValue = false) {
     einInputs.forEach(elem => {
         elem.removeAttribute('required');
         if(wipeValue) {
@@ -28,27 +27,25 @@ const _clearEINValues = function (wipeValue = false) {
         }
     });
 };
-/**
- *
- * @param {boolean} wipeValue removes data input in 'foreign-country' radio option
- * @private
- */
-const _domesticCountrySelected = function (wipeValue = false) {
-    countrySelect.removeAttribute('required');
-    if(wipeValue) {
-        countrySelect.value = "";
-    }
+
+const _clearTaxExemptStatus = function (wipeValue = false) {
+    taxRadios.forEach(r => {
+        r.removeAttribute('required');
+        if(wipeValue) {
+            r.value = "";
+        }
+    });
+};
+
+const _domesticCountrySelected = function () {
+    foreignCountrySelect.removeAttribute('required');
     foreignCountryList.classList.add('hidden');
-    taxExemptFieldset.classList.remove('hidden')
-    if('no' === taxExemptFieldset.querySelector(':checked').value.toLowerCase()) {
-        document.getElementById('ein-fieldset').classList.remove('hidden');
-        einInputs.forEach(elem => {
-            elem.setAttribute('required', 'required');
-        })
-    } else {
-        einInputs.forEach(elem => {elem.removeAttribute('required')});
-        taxRadios.forEach(r => r.setAttribute('required', 'required'));
-    }
+    taxExemptFieldset.classList.remove('hidden');
+    einFieldSet.classList.remove('hidden');
+    einInputs.forEach(elem => {
+        elem.setAttribute('required', 'required');
+    });
+    taxRadios.forEach(r => r.setAttribute('required', 'required'));
 };
 
 const _setUIFormSubmit = function (form) {
@@ -73,17 +70,13 @@ const _setUISuccessMsg = function () {
     }
 };
 
-/**
- * @param {boolean} wipeValue removes data input in 'domestic-country' radio selection
- * @private
- */
-const _foreignCountrySelected = function (wipeValue = false) {
-    countrySelect.setAttribute('required', 'required');
+const _foreignCountrySelected = function () {
+    foreignCountrySelect.setAttribute('required', 'required');
     foreignCountryList.classList.remove('hidden');
-    einFieldSet.classList.add('hidden');
     taxExemptFieldset.classList.add('hidden');
-    taxRadios.forEach(r => r.removeAttribute('required'));
-    _clearEINValues(wipeValue);
+    einFieldSet.classList.add('hidden');
+    _clearTaxExemptStatus()
+    _clearEINInputs();
 };
 
 document.addEventListener('change', function (e){
@@ -94,20 +87,6 @@ document.addEventListener('change', function (e){
             _domesticCountrySelected();
         } else {
             _foreignCountrySelected();
-        }
-    }
-    console.log('a change...')
-    if('radio' === elem.type && 'tax-exempt' === elem.name) {
-        if('yes' === elem.value.toLowerCase()) {
-            einFieldSet.classList.add('hidden');
-            einInputs.forEach(elem => {
-                elem.removeAttribute('required');
-            })
-        } else {
-            einFieldSet.classList.remove('hidden');
-            einInputs.forEach(elem => {
-                elem.setAttribute('required', 'required');
-            })
         }
     }
     if('number' === elem.type) {
@@ -128,10 +107,6 @@ document.addEventListener('submit', function (e){
         _foreignCountrySelected(true);
     } else {
         _domesticCountrySelected(true);
-        if('yes' === taxExemptFieldset.querySelector(':checked').value.toLowerCase()) {
-            // avoid passing to back end
-            _clearEINValues();
-        }
     }
     const form = e.target;
 
@@ -171,8 +146,8 @@ document.addEventListener('click', e => {
     }
 });
 
+// in event of user back-navigating post-submission
 window.addEventListener('load', () => {
-    // in event of user back naving post-submission
     const spinner = document.querySelector('.spinner');
     if(spinner) spinner.remove();
     einForm.classList.remove('hidden');
