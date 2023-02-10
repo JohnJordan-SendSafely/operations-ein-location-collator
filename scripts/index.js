@@ -89,6 +89,10 @@ document.addEventListener('change', function (e){
             _foreignCountrySelected();
         }
     }
+    if('radio' === elem.type && 'tax-exempt' === elem.name) {
+        // may or may not have an EIN => make optional
+        _clearEINInputs();
+    }
     if('number' === elem.type) {
         _checkForMultiDigits(elem);
     }
@@ -143,17 +147,5 @@ document.addEventListener('click', e => {
                 elem.reportValidity();
             }
         });
-    }
-});
-
-// in event of user back-navigating post-submission
-window.addEventListener('load', () => {
-    const spinner = document.querySelector('.spinner');
-    if(spinner) spinner.remove();
-    einForm.classList.remove('hidden');
-    if(foreignCompanyFS.querySelector('input').checked) {
-        _foreignCountrySelected();
-    } else {
-        _domesticCountrySelected();
     }
 });
