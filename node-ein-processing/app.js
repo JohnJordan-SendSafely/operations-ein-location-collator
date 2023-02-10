@@ -65,10 +65,9 @@ const postUpdateToAppScript = async function (formattedRecord) {
 
 
 (async function (){
-
     let searchResult;
     // Using our records as source of Truth
-    const csvFilePath = './models/operations-ein-location-collator - EIN Submission Tracker.csv';
+    const csvFilePath = './models/ex-customer-list - Sheet1.csv';
     const companyInitialList = await csv().fromFile(csvFilePath);
 
     let ein, zip, haveSearchedEIN;
@@ -89,7 +88,6 @@ const postUpdateToAppScript = async function (formattedRecord) {
         if(!haveSearchedEIN && !isStatedAsForeignCountry(company.Country) && !shortName) {
             console.log(`need to search ${company.companyName}, ${company} ...`);
             searchResult = await getSearchResults(company.companyName);
-            //console.log('searchResult: ', searchResult);
 
             if(0 === searchResult.num) {
                 console.log(searchResult);
