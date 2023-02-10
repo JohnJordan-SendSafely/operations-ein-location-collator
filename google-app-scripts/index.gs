@@ -1,3 +1,5 @@
+const SCRIPT_PROP = PropertiesService.getScriptProperties();
+const SHEET_OWNER_EMAIL = SCRIPT_PROP.getProperty("SHEET_OWNER_EMAIL");
 const _e = {
     parameter: {
         "company-legal-name": "MegaCorp",
@@ -17,20 +19,33 @@ const _e = {
     }
 };
 
-const doPost = function(e){
+const doPost = function(e) {
     const ev = e || _e; // real or fake data
     const postData = ev.postData;
-    if(postData) {
-        console.log(postData.getContentType());
-        console.log(postData.contents);
-        let c = JSON.parse(postData.contents);
-        if(c.type === "update") {
-            console.log('update recieved! ', c);
-            updateHandler(c);
+    const lock = LockService.getPublicLock();
+
+    try {
+        lock.waitLock(3000);
+        // NOT form submission
+        if(postData) {
+            console.log(postData.getContentType());
+            console.log(postData.contents);
+            let c = JSON.parse(postData.contents);
+            if(c.type === "update") {
+                console.log('update recieved! ', c);
+                updateHandler(c);
+            }
+        } else {
+            // form submission
+            const {submissionID, timeStamp} = handleSubmission(ev);
+            ev.parameter['submission-id'] = submissionID;
+            ev.parameter['time-stamp'] = timeStamp;
+            updateTrackingSheet(ev);
         }
-    } else {
-        // handleSubmission(ev);
-        // updateTrackingSheet(ev);
+        return ContentService.createTextOutput(JSON.stringify({status: "success"})).setMimeType(ContentService.MimeType.JSON);
+    } catch(e) {
+        _sendMailToPerson(null, `Error: Customer EIN Tracking POST Request`, e);
+    } finally {
+        lock.releaseLock();
     }
-    return ContentService.createTextOutput(JSON.stringify({status: "success"})).setMimeType(ContentService.MimeType.JSON);
 };

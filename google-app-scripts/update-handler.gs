@@ -1,5 +1,4 @@
-const SHEET_OWNER_EMAIL = SCRIPT_PROP.getProperty("SHEET_OWNER_EMAIL");
-
+// This script handles NodeJS/CLI posted updates to customer records (and NOT form submissions)
 const sheetSubT = SpreadsheetApp.getActive().getSheetByName("EIN Submission Tracker");
 const sheetValuesSubT = sheetSubT.getDataRange().getValues();
 
@@ -8,20 +7,20 @@ const sheetValuesSubT = sheetSubT.getDataRange().getValues();
  * @param r [object] record to update
  */
 const _setDomesticValues = function(rowMatchIndex, r) {
-    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('Country')).setValue("United States");
-    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('EIN')).setValue(r.ein);
+    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('Country', sheetValuesSubT)).setValue("USA");
+    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('EIN', sheetValuesSubT)).setValue(r.ein);
     if(2 !== r.state.length) {
         console.log('State code is not 2-code format for ', r.companyName);
     }
-    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('State')).setValue(r.state);
+    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('State', sheetValuesSubT)).setValue(r.state);
 
     let zip = parseInt(r.zipCode, 10);
     if(!(zip && 'number' === typeof zip)) {
         console.log('ZIP code is not in expected format for ', r.companyName);
     }
-    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('ZIP')).setValue(r.zipCode);
-    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('State + ZIP Auto Validated')).setValue(r.zipValidated);
-    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('Address')).setValue(r.fullAddress);
+    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('ZIP', sheetValuesSubT)).setValue(r.zipCode);
+    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('State + ZIP Auto Validated', sheetValuesSubT)).setValue(r.zipValidated);
+    sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('Address', sheetValuesSubT)).setValue(r.fullAddress);
 };
 
 const updateHandler = function (postedUpdate) {
@@ -44,7 +43,7 @@ const updateHandler = function (postedUpdate) {
         if(einRecord && ein && typeof parseInt(ein, 10) === "number") {
             _setDomesticValues(rowMatchIndex, recordToUpdate);
         } else {
-            if(recordToUpdate.country && "United States" === recordToUpdate.country) {
+            if(recordToUpdate.country && "USA" === recordToUpdate.country) {
                 GmailApp.sendEmail(SHEET_OWNER_EMAIL,
                     `Issue with Sheet Tracker Update: ${recordToUpdate.companyName}`,
                     `No EIN for this company (Sell ID: ${recordToUpdate.sellID}), but may be US company (As per 'EIN Submission Tracker' sheet)`
@@ -52,10 +51,23 @@ const updateHandler = function (postedUpdate) {
                 recordToUpdate['Issue Type'] += " (May be a US company).";
             }
         }
-        sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('Name Record in EIN Service')).setValue(einRecord);
-        sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('Issue w/ Submission')).setValue(recordToUpdate['Issue w/ Submission']);
-        sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('Issue Type')).setValue(recordToUpdate['Issue Type']);
-        sheetSubT.getRange(rowMatchIndex, _getColumnIndexByName('Issue Resolved')).setValue(recordToUpdate['Issue Resolved']);
+
+        sheetSubT
+            .getRange(rowMatchIndex, _getColumnIndexByName('Name Record in EIN Service', sheetValuesSubT))
+            .setValue(einRecord);
+
+        sheetSubT
+            .getRange(rowMatchIndex, _getColumnIndexByName('Issue w/ Submission', sheetValuesSubT))
+            .setValue(recordToUpdate['Issue w/ Submission']);
+
+        sheetSubT
+            .getRange(rowMatchIndex, _getColumnIndexByName('Issue Type', sheetValuesSubT))
+            .setValue(recordToUpdate['Issue Type']);
+
+        sheetSubT
+            .getRange(rowMatchIndex, _getColumnIndexByName('Issue Resolved', sheetValuesSubT))
+            .setValue(recordToUpdate['Issue Resolved']);
+
         // end of ROW MATCH block
     } else {
         console.log(`No record found in Sheet Tracker for company ('${recordToUpdate.companyName}')`);
