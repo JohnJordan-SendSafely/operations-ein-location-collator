@@ -21,27 +21,14 @@ const _e = {
 
 const doPost = function(e) {
     const ev = e || _e; // real or fake data
-    const postData = ev.postData;
     const lock = LockService.getPublicLock();
-
+    // handling form submission only
     try {
         lock.waitLock(3000);
-        // NOT form submission
-        if(postData) {
-            console.log(postData.getContentType());
-            console.log(postData.contents);
-            let c = JSON.parse(postData.contents);
-            if(c.type === "update") {
-                console.log('update recieved! ', c);
-                updateHandler(c);
-            }
-        } else {
-            // form submission
-            const {submissionID, timeStamp} = handleSubmission(ev);
-            ev.parameter['submission-id'] = submissionID;
-            ev.parameter['time-stamp'] = timeStamp;
-            updateTrackingSheet(ev);
-        }
+        const {submissionID, timeStamp} = handleSubmission(ev);
+        ev.parameter['submission-id'] = submissionID;
+        ev.parameter['time-stamp'] = timeStamp;
+        updateTrackingSheet(ev);
         return ContentService.createTextOutput(JSON.stringify({status: "success"})).setMimeType(ContentService.MimeType.JSON);
     } catch(e) {
         _sendMailToPerson(null, `Error: Customer EIN Tracking POST Request`, e);
