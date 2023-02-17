@@ -20,6 +20,7 @@ const _eForm = {
         "ein_digit_7": 7,
         "ein_digit_8": 8,
         "ein_digit_9": 9,
+        "foreign-company-number": "NRT-46753"
     }
 };
 
@@ -29,7 +30,7 @@ const _getEIN = function(params) {
         ein += digit;
     }
     if(9 !== ein.length) {
-        return "n/a";
+        return "N/A";
     }
     return ein;
 };
@@ -45,11 +46,12 @@ const _testHandleSubmission = function () {
 const handleSubmission = function(e){
     const requestParams = e.parameter; //object
     const companyLegalName = requestParams["company-legal-name"];
-    const companyDBAName = requestParams["company-dba-name"] || "n/a";
-    const parentCompany = requestParams["parent-company"] || "n/a";
-    const taxExempt = _getTaxStatus(requestParams['tax-exempt']) || "n/a";
+    const companyDBAName = requestParams["company-dba-name"] || "N/A";
+    const parentCompany = requestParams["parent-company"] || "N/A";
+    const taxExempt = _getTaxStatus(requestParams['tax-exempt']) || "N/A";
     const ein = _getEIN(requestParams);
     const origin = _getCountryOfOrigin(requestParams);
+    const foreignCompanyNumber = requestParams['foreign-company-number'] || "N/A";
     console.log('Submission from company: ', companyLegalName,companyDBAName, ein, origin);
 
     const colIndexSubmissionId = _getColumnIndexByName('Submission ID#', formSubmissionSheetValues);
@@ -59,6 +61,7 @@ const handleSubmission = function(e){
     const colIndexTaxExempt = _getColumnIndexByName('Tax-Exempt', formSubmissionSheetValues);
     const colIndexEIN = _getColumnIndexByName('Employer Identification Number', formSubmissionSheetValues);
     const colIndexCountry = _getColumnIndexByName('Country of Origin', formSubmissionSheetValues);
+    const colIndexForeignCompanyNumber = _getColumnIndexByName("Foreign Company Registration Number", formSubmissionSheetValues);
     const colIndexTimeStamp = _getColumnIndexByName('Timestamp', formSubmissionSheetValues);
 
     const prevSubmissionValue = formSubmissionSheet.getRange(1, 1, 2).getValues();
@@ -75,6 +78,7 @@ const handleSubmission = function(e){
     formSubmissionSheet.getRange(2,colIndexTaxExempt).setValue(taxExempt);
     formSubmissionSheet.getRange(2,colIndexEIN).setValue(ein);
     formSubmissionSheet.getRange(2,colIndexCountry).setValue(origin);
+    formSubmissionSheet.getRange(2, colIndexForeignCompanyNumber).setValue(foreignCompanyNumber);
     const timeStamp = new Date();
     formSubmissionSheet.getRange(2,colIndexTimeStamp).setValue(timeStamp);
     return {submissionID, timeStamp};

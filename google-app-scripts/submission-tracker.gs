@@ -19,7 +19,8 @@ const test_updateTrackingSheet = function (e) {
             "ein_digit_6": 6,
             "ein_digit_7": 7,
             "ein_digit_8": 8,
-            "ein_digit_9": 9
+            "ein_digit_9": 9,
+            "foreign-company-number": "NRT-46753"
         }
     };
     const ev = e || _e;
@@ -65,8 +66,9 @@ const updateTrackingSheet = function(e){
     const requestParams = e.parameter; //object
     const companyLegalName = requestParams['company-legal-name'];
     const companyDBA = requestParams["company-dba-name"];
-    const parentCompany = requestParams["parent-company"] || "n/a";
+    const parentCompany = requestParams["parent-company"] || "N/A";
     const formEIN = _getEIN(requestParams);
+    const foreignCompanyNumber = requestParams['foreign-company-number'] || "N/A";
     const country = _getCountryOfOrigin(requestParams);
     const submissionID = requestParams['submission-id'];
     const timeStamp = requestParams['time-stamp'];
@@ -83,6 +85,7 @@ const updateTrackingSheet = function(e){
     const colIndexSubmitted = _getColumnIndexByName('Submitted Form', trackingValues);
     const colIndexSubmissionId = _getColumnIndexByName('Submission ID', trackingValues);
     const colIndexDOS = _getColumnIndexByName('Date of Submission', trackingValues);
+    const colIndexForeignCompanyNumber = _getColumnIndexByName("Foreign Company Registration Number", trackingValues);
     const colIndexCountry= _getColumnIndexByName('Country', trackingValues);
     const colIndexFormEIN = _getColumnIndexByName('EIN (From Form)', trackingValues);
 
@@ -98,6 +101,7 @@ const updateTrackingSheet = function(e){
         submissionTrackingSheet.getRange(companyRowIndex,colIndexSubmitted).setValue(true);
         submissionTrackingSheet.getRange(companyRowIndex,colIndexSubmissionId).setValue(submissionID);
         submissionTrackingSheet.getRange(companyRowIndex,colIndexDOS).setValue(timeStamp);
+        submissionTrackingSheet.getRange(companyRowIndex, colIndexForeignCompanyNumber).setValue(foreignCompanyNumber);
         submissionTrackingSheet.getRange(companyRowIndex,colIndexCountry).setValue(country);
         submissionTrackingSheet.getRange(companyRowIndex,colIndexFormEIN).setValue(formEIN);
     } else {

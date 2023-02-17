@@ -3,6 +3,8 @@ const domesticCompanyFS = document.getElementById('domestic-company');
 const foreignCompanyFS = document.getElementById('foreign-company');
 const foreignCountrySelect = foreignCompanyFS.querySelector('select');
 const foreignCountryList = foreignCompanyFS.querySelector("#foreign-country-list");
+const foreignCountryRegistration = foreignCompanyFS.querySelector('#foreign-country-registration');
+const foreignCompanyNumber = foreignCountryRegistration.querySelector('#foreign-company-number');
 const taxExemptFieldset = document.getElementById('tax-exempt-fieldset');
 const taxRadios = taxExemptFieldset.querySelectorAll('[type="radio"]');
 const einFieldSet = document.getElementById('ein-fieldset');
@@ -37,6 +39,8 @@ const _clearTaxExemptStatus = function (wipeValue = false) {
 const _domesticCountrySelected = function () {
     foreignCountrySelect.removeAttribute('required');
     foreignCountryList.classList.add('hidden');
+    foreignCountryRegistration.classList.add('hidden');
+    foreignCompanyNumber.removeAttribute('required');
     taxExemptFieldset.classList.remove('hidden');
     einFieldSet.classList.remove('hidden');
     einInputs.forEach(elem => {
@@ -70,6 +74,8 @@ const _setUISuccessMsg = function () {
 const _foreignCountrySelected = function () {
     foreignCountrySelect.setAttribute('required', 'required');
     foreignCountryList.classList.remove('hidden');
+    foreignCountryRegistration.classList.remove('hidden');
+    foreignCompanyNumber.setAttribute('required', 'required');
     taxExemptFieldset.classList.add('hidden');
     einFieldSet.classList.add('hidden');
     _clearTaxExemptStatus()
