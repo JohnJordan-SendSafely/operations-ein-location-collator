@@ -16,6 +16,10 @@ const _getCountryOfOrigin = function (parameters) {
     return "error with form data";
 };
 
+const _getForeignCompanyNumber = function(regNumber = "") {
+    return regNumber && regNumber.toUpperCase();
+};
+
 const _findRowMatch = function(ev){
     const idToFind = ev.sellID;
     const nameToFind = ev.companyName.toLowerCase();

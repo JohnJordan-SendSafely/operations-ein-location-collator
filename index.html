@@ -27,13 +27,16 @@
                 If your company is incorporated <strong>in the United States</strong>:
             </p>
             <ul>
-                <li>Check the box next to “Domestic company” and provide your IRS-issued <strong>Employer Identification Number</strong> as it appears on your W-9.</li>
+                <li>Check the box next to “Domestic company”.</li>
+                <li>Provide your IRS-issued <strong>Employer Identification Number</strong> as it appears on your W-9.</li>
             </ul>
             <p>
                 If your company is incorporated <strong>outside of the United States</strong>:
             </p>
             <ul>
-                <li>Check the box next to “Foreign company” and provide the <strong>name of the country</strong> in which the company is registered.</li>
+                <li>Check the box next to “Foreign company”.</li>
+                <li>Provide the <strong>name of the country</strong> in which the company is registered.</li>
+                <li>Provide the applicable <strong>company registration number</strong>.</li>
             </ul>
             <hr>
             <form 
@@ -355,7 +358,8 @@
                             </div>
                             <div class="nested hidden" id="foreign-country-registration">
                                 <label for="foreign-company-number">Applicable company registration number <span class="req">*</span></label>
-                                <input id="foreign-company-number" type="text" name="foreign-company-number" placeholder="Your company registration number" required>
+                                <input aria-describedby="foreign-details" id="foreign-company-number" type="text" name="foreign-company-number" placeholder="Your company registration number" required>
+                                <div class="optional" id="foreign-details">(Enter “N/A” if not available)</div>
                             </div>
                         </fieldset>
                     </fieldset>

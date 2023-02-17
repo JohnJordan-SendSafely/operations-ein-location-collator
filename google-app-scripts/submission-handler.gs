@@ -51,7 +51,7 @@ const handleSubmission = function(e){
     const taxExempt = _getTaxStatus(requestParams['tax-exempt']) || "N/A";
     const ein = _getEIN(requestParams);
     const origin = _getCountryOfOrigin(requestParams);
-    const foreignCompanyNumber = requestParams['foreign-company-number'] || "N/A";
+    const foreignCompanyNumber = _getForeignCompanyNumber(requestParams['foreign-company-number']) || "N/A";
     console.log('Submission from company: ', companyLegalName,companyDBAName, ein, origin);
 
     const colIndexSubmissionId = _getColumnIndexByName('Submission ID#', formSubmissionSheetValues);
