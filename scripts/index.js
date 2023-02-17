@@ -86,10 +86,6 @@ document.addEventListener('change', function (e){
             _foreignCountrySelected();
         }
     }
-    if('radio' === elem.type && 'tax-exempt' === elem.name) {
-        // may or may not have an EIN => make optional
-        _removeRequiredAttr(einInputs);
-    }
     if('number' === elem.type) {
         _checkForMultiDigits(elem);
     }
