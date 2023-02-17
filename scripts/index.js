@@ -19,12 +19,9 @@ const _checkForMultiDigits = function (elem) {
     }
 }
 
-const _clearEINInputs = function (wipeValue = false) {
-    einInputs.forEach(elem => {
+const _removeRequiredAttr = function (elemList) {
+    elemList.forEach(elem => {
         elem.removeAttribute('required');
-        if(wipeValue) {
-            elem.value = "";
-        }
     });
 };
 
@@ -76,7 +73,7 @@ const _foreignCountrySelected = function () {
     taxExemptFieldset.classList.add('hidden');
     einFieldSet.classList.add('hidden');
     _clearTaxExemptStatus()
-    _clearEINInputs();
+    _removeRequiredAttr(einInputs);
 };
 
 document.addEventListener('change', function (e){
@@ -91,7 +88,7 @@ document.addEventListener('change', function (e){
     }
     if('radio' === elem.type && 'tax-exempt' === elem.name) {
         // may or may not have an EIN => make optional
-        _clearEINInputs();
+        _removeRequiredAttr(einInputs);
     }
     if('number' === elem.type) {
         _checkForMultiDigits(elem);
