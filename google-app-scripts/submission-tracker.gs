@@ -8,6 +8,7 @@ const test_updateTrackingSheet = function (e) {
             "company-legal-name": "118 Group",
             "country-of-origin": "domestic",
             "company-dba-name": "",
+            "parent-company": "N/A",
             "tax-exempt": "no",
             "employer-identification-number": '',
             "ein_digit_1": 1,
@@ -59,12 +60,12 @@ const _getIndexFromCompanyName = function(cName){
     return -1;
 };
 
-
 const updateTrackingSheet = function(e){
     console.log('calling updateTrackingSheet...');
     const requestParams = e.parameter; //object
     const companyLegalName = requestParams['company-legal-name'];
     const companyDBA = requestParams["company-dba-name"];
+    const parentCompany = requestParams["parent-company"] || "n/a";
     const formEIN = _getEIN(requestParams);
     const country = _getCountryOfOrigin(requestParams);
     const submissionID = requestParams['submission-id'];
@@ -77,6 +78,7 @@ const updateTrackingSheet = function(e){
 
     const colIndexLegalName = _getColumnIndexByName('Company Name (Legal)', trackingValues);
     const colIndexDBA = _getColumnIndexByName('D/B/A', trackingValues);
+    const colIndexParentCompany = _getColumnIndexByName("Parent Company", trackingValues);
     const colIndexTaxExempt = _getColumnIndexByName('Tax-Exempt', trackingValues);
     const colIndexSubmitted = _getColumnIndexByName('Submitted Form', trackingValues);
     const colIndexSubmissionId = _getColumnIndexByName('Submission ID', trackingValues);
@@ -91,6 +93,7 @@ const updateTrackingSheet = function(e){
         console.log(trackingValues[companyRowIndex - 1]);
         submissionTrackingSheet.getRange(companyRowIndex,colIndexLegalName).setValue(companyLegalName);
         submissionTrackingSheet.getRange(companyRowIndex,colIndexDBA).setValue(companyDBA);
+        submissionTrackingSheet.getRange(companyRowIndex,colIndexParentCompany).setValue(parentCompany);
         submissionTrackingSheet.getRange(companyRowIndex,colIndexTaxExempt).setValue(taxExempt);
         submissionTrackingSheet.getRange(companyRowIndex,colIndexSubmitted).setValue(true);
         submissionTrackingSheet.getRange(companyRowIndex,colIndexSubmissionId).setValue(submissionID);
@@ -99,8 +102,8 @@ const updateTrackingSheet = function(e){
         submissionTrackingSheet.getRange(companyRowIndex,colIndexFormEIN).setValue(formEIN);
     } else {
         let subj = `Issue: Customer EIN Form Submission ID #${submissionID}`;
-        let msg = `Company ${companyLegalName} (DBA: ${companyDBA} submitted EIN form, but no match was found in
-        sheet '${trackingSheetName}.' )`;
+        let msg = `Company "${companyLegalName}" (DBA: "${companyDBA}") submitted an EIN form, but no match was found in sheet "${trackingSheetName}". 
+        Submission happened on ${timeStamp}, with ID ${submissionID}`;
         _sendMailToPerson(null, subj, msg);
     }
 };

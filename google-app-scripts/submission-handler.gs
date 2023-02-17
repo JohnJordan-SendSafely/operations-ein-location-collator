@@ -1,4 +1,5 @@
-const formSubmissionSheet = SpreadsheetApp.getActive().getSheetByName("EIN Form Submissions");
+const handlerSheetName = "EIN Form Submissions";
+const formSubmissionSheet = SpreadsheetApp.getActive().getSheetByName(handlerSheetName);
 const formSubmissionSheetValues = formSubmissionSheet.getDataRange().getValues();
 
 // Fake event data for testing.
@@ -6,6 +7,7 @@ const _eForm = {
     parameter: {
         "company-legal-name": "MegaCorp",
         "company-dba-name": "Honest Joes",
+        "parent-company": "N/A",
         "country-of-origin": "domestic",
         "tax-exempt": "yes",
         "employer-identification-number": '',
@@ -44,6 +46,7 @@ const handleSubmission = function(e){
     const requestParams = e.parameter; //object
     const companyLegalName = requestParams["company-legal-name"];
     const companyDBAName = requestParams["company-dba-name"] || "n/a";
+    const parentCompany = requestParams["parent-company"] || "n/a";
     const taxExempt = _getTaxStatus(requestParams['tax-exempt']) || "n/a";
     const ein = _getEIN(requestParams);
     const origin = _getCountryOfOrigin(requestParams);
@@ -52,6 +55,7 @@ const handleSubmission = function(e){
     const colIndexSubmissionId = _getColumnIndexByName('Submission ID#', formSubmissionSheetValues);
     const colIndexLegalName = _getColumnIndexByName('Legal Name', formSubmissionSheetValues);
     const colIndexDBA = _getColumnIndexByName('D/B/A Name', formSubmissionSheetValues);
+    const colIndexParentCompany = _getColumnIndexByName("Parent Company", formSubmissionSheetValues);
     const colIndexTaxExempt = _getColumnIndexByName('Tax-Exempt', formSubmissionSheetValues);
     const colIndexEIN = _getColumnIndexByName('Employer Identification Number', formSubmissionSheetValues);
     const colIndexCountry = _getColumnIndexByName('Country of Origin', formSubmissionSheetValues);
@@ -67,6 +71,7 @@ const handleSubmission = function(e){
     formSubmissionSheet.getRange(2,colIndexSubmissionId).setValue(submissionID);
     formSubmissionSheet.getRange(2,colIndexLegalName).setValue(companyLegalName);
     formSubmissionSheet.getRange(2,colIndexDBA).setValue(companyDBAName);
+    formSubmissionSheet.getRange(2, colIndexParentCompany).setValue(parentCompany);
     formSubmissionSheet.getRange(2,colIndexTaxExempt).setValue(taxExempt);
     formSubmissionSheet.getRange(2,colIndexEIN).setValue(ein);
     formSubmissionSheet.getRange(2,colIndexCountry).setValue(origin);
